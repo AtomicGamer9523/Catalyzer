@@ -1,0 +1,22 @@
+[package]
+name = "catalyzer-core"
+description = "Core of Catalyzer"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lib]
+path = "lib.rs"
+
+[dependencies.utils]
+package = "catalyzer-utils"
+path = "../catalyzer-utils"
+
+[lints]
+workspace = true
+
+[dependencies]
+tokio.workspace = true
+tower.workspace = true
+axum.workspace = true

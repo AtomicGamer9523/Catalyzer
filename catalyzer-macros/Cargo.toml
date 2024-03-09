@@ -1,0 +1,23 @@
+[package]
+name = "catalyzer-macros"
+description = "Macros to make life easier"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lib]
+proc-macro = true
+path = "lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies.base]
+package = "catalyzer-core"
+path = "../catalyzer-core"
+
+[dependencies]
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true

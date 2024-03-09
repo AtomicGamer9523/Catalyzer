@@ -1,0 +1,13 @@
+[package]
+name = "catalyzer-utils"
+description = "Utilities to make development easier"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lib]
+path = "lib.rs"
+
+[lints]
+workspace = true

@@ -1,0 +1,14 @@
+[package]
+name = "example-hello-world"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "example-hello-world"
+path = "main.rs"
+
+[dependencies.catalyzer]
+path = "../.."

@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    # Catalyzer
+    "catalyzer-*",
+    ".",
+
+    # Examples
+    "examples/*"
+]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+authors = [
+    "Матвей Т <https://matveit.dev> AtomicGamer9523@github"
+]
+license-file = "LICENSE"
+
+[workspace.lints.rust]
+unused = "warn"
+clippy = "warn"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+syn = { version = "2", features = ["full"] }
+proc-macro2 = "1"
+tower = "0.4"
+axum = "0.7"
+quote = "1"
+
+[package]
+name = "catalyzer"
+description = "HTTP server framework"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lib]
+path = "catalyzer.rs"
+
+[dependencies.base]
+package = "catalyzer-core"
+path = "catalyzer-core"
+
+[dependencies.macros]
+package = "catalyzer-macros"
+path = "catalyzer-macros"
