@@ -29,7 +29,7 @@ pub(crate) fn main(cfg: T, input: T) -> T {
         #fn_token #name() -> ::catalyzer::Result {
             let runtime = ::catalyzer::__internals__::runtime::Runtime::init()?;
             async fn #name() -> ::catalyzer::Result {
-                #body.await?.await.map_err(From::from)
+                #body?.catalyze().await?.await.map_err(From::from)
             }
             runtime.run_main(#name())
         }

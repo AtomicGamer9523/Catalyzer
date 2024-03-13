@@ -1,3 +1,6 @@
+//! Macros for the Catalyzer framework.
+
+#[allow(unused_extern_crates)]
 extern crate proc_macro;
 
 use proc_macro2::TokenStream as T;

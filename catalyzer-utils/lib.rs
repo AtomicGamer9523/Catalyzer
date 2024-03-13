@@ -2,16 +2,18 @@
 
 #![no_std]
 
+/// A trait to convert one result type into another.
 pub trait ResultTransformer<O2, E2> {
+    /// Convert the result into another result type.
     fn auto(self) -> Result<O2, E2>;
 }
 
 impl<O, E, O2, E2> ResultTransformer<O2, E2> for Result<O, E> where
-    O: Into<O2>,
-    E: Into<E2>
+    O2: From<O>,
+    E2: From<E>,
 {
     #[inline]
     fn auto(self) -> Result<O2, E2> {
-        self.map(Into::into).map_err(Into::into)
+        self.map(From::from).map_err(From::from)
     }
 }

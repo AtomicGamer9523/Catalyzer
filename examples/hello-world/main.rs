@@ -9,7 +9,7 @@ use res::Html;
 
 #[main]
 async fn main() {
-    App::new()
+    App::new_stateless()
         .get("/", index)
         .launch("127.0.0.1:3000")
 }

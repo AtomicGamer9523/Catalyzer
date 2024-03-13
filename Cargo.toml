@@ -30,6 +30,7 @@ proc-macro2 = "1"
 tower = "0.4"
 axum = "0.7"
 quote = "1"
+log = "0.4"
 
 [package]
 name = "catalyzer"
@@ -45,7 +46,22 @@ path = "catalyzer.rs"
 [dependencies.base]
 package = "catalyzer-core"
 path = "catalyzer-core"
+default-features = false
 
 [dependencies.macros]
 package = "catalyzer-macros"
 path = "catalyzer-macros"
+
+[features]
+default = ["file-loading-dynamic", "automatic-defaults"]
+
+file-loading-dynamic = ["base/file-loading-dynamic"]
+file-loading-embed = ["base/file-loading-embed"]
+
+more-content-types = ["base/more-content-types"]
+
+cookies = ["base/cookies"]
+cookies-private = ["base/cookies-private"]
+cookies-signed = ["base/cookies-signed"]
+
+automatic-defaults = ["base/automatic-defaults"]

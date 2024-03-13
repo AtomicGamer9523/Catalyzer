@@ -13,6 +13,15 @@ path = "lib.rs"
 package = "catalyzer-utils"
 path = "../catalyzer-utils"
 
+[dependencies.logger]
+package = "simple_logger"
+version = "4"
+
+[dependencies.axumextras]
+package = "axum-extra"
+version = "0.9"
+optional = true
+
 [lints]
 workspace = true
 
@@ -20,3 +29,18 @@ workspace = true
 tokio.workspace = true
 tower.workspace = true
 axum.workspace = true
+log.workspace = true
+
+[features]
+default = ["file-loading-dynamic", "automatic-defaults"]
+
+file-loading-dynamic = []
+file-loading-embed = []
+
+more-content-types = []
+
+cookies = ["dep:axumextras", "axumextras/cookie"]
+cookies-private = ["cookies", "axumextras/cookie-private"]
+cookies-signed = ["cookies", "axumextras/cookie-signed"]
+
+automatic-defaults = []

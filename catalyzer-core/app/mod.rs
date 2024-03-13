@@ -1,10 +1,20 @@
-use ::axum::handler::Handler;
 pub(crate) mod launch;
+pub(crate) mod service;
+
+use crate::__internals__::*;
+use crate::res::*;
+use crate::req::*;
+
+use core::convert::Infallible;
 
 /// The main application type.
-#[repr(transparent)]
 #[derive(Debug, Clone)]
-pub struct App<State = ()>(pub(super) axum::Router<State>);
+#[cfg_attr(not(feature = "automatic-defaults"), repr(transparent))]
+pub struct App<State = ()> {
+    pub(super) router: AxumRouter<State>,
+    #[cfg(feature = "automatic-defaults")]
+    pub(super) modified: bool,
+}
 
 macro_rules! method {
     ( $(
@@ -14,13 +24,35 @@ macro_rules! method {
         $(#[$attr])*
         pub fn $name<Return, H>(mut self, path: &str, handler: H) -> Self
         where
-            H: Handler<Return, State>,
+            H: AxumHandler<Return, State>,
             Return: Clone + Send + Sync + 'static,
         {
-            self.0 = self.0.route(path, axum::routing::$name(handler));
+            self.router = self.router.route(path, axum::routing::$name(handler));
+            #[cfg(feature = "automatic-defaults")]
+            { self.modified = true; }
             self
         }
     )* )
+}
+
+impl App<()> {
+    /// Construct a new stateless `App`.
+    #[inline]
+    pub fn new_stateless() -> Self {
+        Self {
+            router: AxumRouter::new(),
+            #[cfg(feature = "automatic-defaults")]
+            modified: false,
+        }
+    }
+}
+
+#[cfg(feature = "automatic-defaults")]
+impl Default for App<()> {
+    #[inline]
+    fn default() -> Self {
+        Self::new_stateless()
+    }
 }
 
 impl<State> App<State> where
@@ -29,7 +61,11 @@ impl<State> App<State> where
     /// Construct a new `App`.
     #[inline]
     pub fn new() -> Self {
-        Self(axum::Router::new())
+        Self {
+            router: AxumRouter::new(),
+            #[cfg(feature = "automatic-defaults")]
+            modified: false,
+        }
     }
 
     method!(
@@ -48,4 +84,27 @@ impl<State> App<State> where
         /// Add a `OPTIONS` route to the application.
         options
     );
+
+    /// Adds a fallback handler to the application.
+    /// 
+    /// The fallback handler is called when no route matches the incoming request.
+    /// Or if any of the handlers return `Err`.
+    #[inline]
+    pub fn fallback<Return, H>(mut self, handler: H) -> Self
+    where
+        H: AxumHandler<Return, State>,
+        Return: Clone + Send + Sync + 'static,
+    {
+        self.router = self.router.fallback(handler);
+        self
+    }
+    /// Sets the application's state.
+    #[inline]
+    pub fn set_state<S2>(self, state: State) -> App<S2> {
+        App {
+            router: self.router.with_state::<S2>(state),
+            #[cfg(feature = "automatic-defaults")]
+            modified: true,
+        }
+    }
 }
