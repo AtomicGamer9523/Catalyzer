@@ -1,0 +1,39 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      -  main
+  workflow_dispatch:
+  
+permissions:
+  contents: write
+
+jobs:
+  rustdoc:
+    name: Rustdoc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install code
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+
+      - name: Generate docs
+        run: cargo +nightly doc --no-deps -p catalyzer
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: target/doc
+          clean: true
+          git-config-email: scout
+          repository-name: AtomicGamer9523/Catalyzer
+          commit-message: "Updated docs (auto)"
+          single-commit: true

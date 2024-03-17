@@ -13,10 +13,6 @@ path = "lib.rs"
 [lints]
 workspace = true
 
-[dependencies.base]
-package = "catalyzer-core"
-path = "../catalyzer-core"
-
 [dependencies]
 proc-macro2.workspace = true
 quote.workspace = true

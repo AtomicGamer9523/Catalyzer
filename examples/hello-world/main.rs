@@ -5,15 +5,17 @@
 //! ```
 
 use catalyzer::*;
-use res::Html;
 
 #[main]
-async fn main() {
-    App::new_stateless()
-        .get("/", index)
-        .launch("127.0.0.1:3000")
+fn main() {
+    App![index]
+        .bind("0.0.0.0:3000")?
+        .launch()
 }
 
-async fn index() -> Result<Html> {
+use res::Html;
+
+#[get("/")]
+fn index() {
     Html::from_file("index.html").await
 }

@@ -19,7 +19,6 @@ license-file = "LICENSE"
 
 [workspace.lints.rust]
 unused = "warn"
-clippy = "warn"
 missing_docs = "warn"
 missing_debug_implementations = "warn"
 
@@ -53,15 +52,9 @@ package = "catalyzer-macros"
 path = "catalyzer-macros"
 
 [features]
-default = ["file-loading-dynamic", "automatic-defaults"]
+default = ["builtin-logger"]
 
-file-loading-dynamic = ["base/file-loading-dynamic"]
-file-loading-embed = ["base/file-loading-embed"]
+builtin-logger = ["base/builtin-logger"]
 
-more-content-types = ["base/more-content-types"]
-
-cookies = ["base/cookies"]
-cookies-private = ["base/cookies-private"]
-cookies-signed = ["base/cookies-signed"]
-
-automatic-defaults = ["base/automatic-defaults"]
+[lints]
+workspace = true

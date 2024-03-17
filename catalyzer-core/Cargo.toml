@@ -7,19 +7,21 @@ authors.workspace = true
 license-file.workspace = true
 
 [lib]
+name = "catalyzer"
 path = "lib.rs"
 
 [dependencies.utils]
 package = "catalyzer-utils"
 path = "../catalyzer-utils"
 
-[dependencies.logger]
-package = "simple_logger"
-version = "4"
-
 [dependencies.axumextras]
 package = "axum-extra"
 version = "0.9"
+optional = true
+
+[dependencies.builtin_logger]
+package = "simple_logger"
+version = "4"
 optional = true
 
 [lints]
@@ -32,15 +34,6 @@ axum.workspace = true
 log.workspace = true
 
 [features]
-default = ["file-loading-dynamic", "automatic-defaults"]
+default = ["builtin-logger"]
 
-file-loading-dynamic = []
-file-loading-embed = []
-
-more-content-types = []
-
-cookies = ["dep:axumextras", "axumextras/cookie"]
-cookies-private = ["cookies", "axumextras/cookie-private"]
-cookies-signed = ["cookies", "axumextras/cookie-signed"]
-
-automatic-defaults = []
+builtin-logger = ["dep:builtin_logger"]

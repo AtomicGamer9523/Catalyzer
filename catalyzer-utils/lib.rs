@@ -5,7 +5,7 @@
 /// A trait to convert one result type into another.
 pub trait ResultTransformer<O2, E2> {
     /// Convert the result into another result type.
-    fn auto(self) -> Result<O2, E2>;
+    fn map_auto(self) -> Result<O2, E2>;
 }
 
 impl<O, E, O2, E2> ResultTransformer<O2, E2> for Result<O, E> where
@@ -13,7 +13,7 @@ impl<O, E, O2, E2> ResultTransformer<O2, E2> for Result<O, E> where
     E2: From<E>,
 {
     #[inline]
-    fn auto(self) -> Result<O2, E2> {
+    fn map_auto(self) -> Result<O2, E2> {
         self.map(From::from).map_err(From::from)
     }
 }

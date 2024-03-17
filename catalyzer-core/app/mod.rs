@@ -1,110 +1,68 @@
-pub(crate) mod launch;
-pub(crate) mod service;
-
+use std::net::{SocketAddr, ToSocketAddrs};
+use axum::Router as AxumRouter;
 use crate::__internals__::*;
-use crate::res::*;
-use crate::req::*;
+use crate::error::*;
 
-use core::convert::Infallible;
+pub(crate) mod launch;
 
-/// The main application type.
-#[derive(Debug, Clone)]
-#[cfg_attr(not(feature = "automatic-defaults"), repr(transparent))]
+#[derive(Debug)]
 pub struct App<State = ()> {
-    pub(super) router: AxumRouter<State>,
-    #[cfg(feature = "automatic-defaults")]
-    pub(super) modified: bool,
-}
-
-macro_rules! method {
-    ( $(
-        $(#[$attr:meta])*
-        $name:ident
-    )* ) => ( $(
-        $(#[$attr])*
-        pub fn $name<Return, H>(mut self, path: &str, handler: H) -> Self
-        where
-            H: AxumHandler<Return, State>,
-            Return: Clone + Send + Sync + 'static,
-        {
-            self.router = self.router.route(path, axum::routing::$name(handler));
-            #[cfg(feature = "automatic-defaults")]
-            { self.modified = true; }
-            self
-        }
-    )* )
-}
-
-impl App<()> {
-    /// Construct a new stateless `App`.
-    #[inline]
-    pub fn new_stateless() -> Self {
-        Self {
-            router: AxumRouter::new(),
-            #[cfg(feature = "automatic-defaults")]
-            modified: false,
-        }
-    }
-}
-
-#[cfg(feature = "automatic-defaults")]
-impl Default for App<()> {
-    #[inline]
-    fn default() -> Self {
-        Self::new_stateless()
-    }
+    router: AxumRouter<State>,
+    address: Option<SocketAddr>,
+    https_address: Option<SocketAddr>,
 }
 
 impl<State> App<State> where
     State: Clone + Send + Sync + 'static
 {
-    /// Construct a new `App`.
-    #[inline]
     pub fn new() -> Self {
         Self {
-            router: AxumRouter::new(),
-            #[cfg(feature = "automatic-defaults")]
-            modified: false,
+            router: AxumRouter::<State>::new(),
+            address: None,
+            https_address: None,
         }
     }
-
-    method!(
-        /// Add a `GET` route to the application.
-        get
-        /// Add a `POST` route to the application.
-        post
-        /// Add a `PUT` route to the application.
-        put
-        /// Add a `DELETE` route to the application.
-        delete
-        /// Add a `PATCH` route to the application.
-        patch
-        /// Add a `HEAD` route to the application.
-        head
-        /// Add a `OPTIONS` route to the application.
-        options
-    );
-
-    /// Adds a fallback handler to the application.
-    /// 
-    /// The fallback handler is called when no route matches the incoming request.
-    /// Or if any of the handlers return `Err`.
-    #[inline]
-    pub fn fallback<Return, H>(mut self, handler: H) -> Self
-    where
-        H: AxumHandler<Return, State>,
-        Return: Clone + Send + Sync + 'static,
+    pub fn route<Return, Meta, Handler>(
+        mut self,
+        handler: Handler
+    ) -> Result<Self> where
+        Handler: AxumHandler<Return, State>,
+        Meta: HandlerMetadata,
+        Return: 'static
     {
-        self.router = self.router.fallback(handler);
-        self
+        let method_router = match Meta::METHOD {
+            Method::GET => axum::routing::get(handler),
+            Method::POST => axum::routing::post(handler),
+            Method::PUT => axum::routing::put(handler),
+            Method::DELETE => axum::routing::delete(handler),
+            Method::PATCH => axum::routing::patch(handler),
+            Method::HEAD => axum::routing::head(handler),
+            Method::OPTIONS => axum::routing::options(handler),
+            Method::TRACE => axum::routing::trace(handler),
+            _ => return Err(CatalyzerError::UnsupportedMethodError)
+        };
+        log::trace!("Mounted a {} on \"{}\"", Meta::METHOD, Meta::PATH);
+        self.router = self.router.route(Meta::PATH, method_router);
+        Ok(self)
     }
-    /// Sets the application's state.
-    #[inline]
+    pub fn bind<Addr>(mut self, addr: Addr) -> Result<Self> where
+        Addr: ToSocketAddrs
+    {
+        let mut addrs = addr.to_socket_addrs()?;
+        let addr = addrs.next().ok_or(IoError::new(
+            IoErrorKind::AddrNotAvailable,
+            "No addresses found for the provided address"
+        ))?;
+        
+        log::debug!("Binding to {}", addr);
+        self.address = Some(addr);
+        Ok(self)
+    }
     pub fn set_state<S2>(self, state: State) -> App<S2> {
         App {
             router: self.router.with_state::<S2>(state),
-            #[cfg(feature = "automatic-defaults")]
-            modified: true,
+            address: self.address,
+            https_address: self.https_address,
         }
     }
 }

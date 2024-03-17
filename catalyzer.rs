@@ -4,5 +4,7 @@
 #![doc(html_root_url = "https://gh.matveit.dev/Catalyzer/catalyzer/")]
 #![doc(html_no_source)]
 
+//! Catalyzer is a web framework for Rust, made to be simple and easy to use.
+
 pub use ::base::*;
 pub use ::macros::*;
