@@ -9,9 +9,7 @@ use crate::res::*;
 use crate::req::*;
 use super::*;
 
-/// The type of a launched application.
-/// 
-/// Docs will be made by [@Phabr1945](https://github.com/Phabr1945)
+/// A Catalyzed application that is ready to be launched.
 #[repr(transparent)]
 #[allow(missing_debug_implementations)]
 pub struct CatalyzedApp<S, State = ()>(WithGracefulShutdown<AxumRouter<State>, S, Pin<Box<dyn Future<Output = ()> + Send>>>) where
@@ -39,15 +37,25 @@ impl<S, State> App<State> where
 {
     /// Catalyzes the application and launches it.
     /// 
-    /// This should be the last method called on the `App` instance.
+    /// This should be the last method called on the [`App`] instance.
     /// 
-    /// Docs will be made by [@Phabr1945](https://github.com/Phabr1945)
+    /// [`App`]: crate::App
     pub async fn launch(self) -> Result<CatalyzedApp<S, State>> {
         let addr = self.address.ok_or(CatalyzerError::NoAddress)?;
         let tcp = tokio::net::TcpListener::bind(addr)
             .await
             .map_err(CatalyzerError::from)?;
         let app = axum::serve(tcp, self.router);
-        Ok(CatalyzedApp(app.with_graceful_shutdown(crate::runtime::signal_handler())))
+        Ok(CatalyzedApp(app.with_graceful_shutdown(signal_handler())))
     }
+}
+
+fn signal_handler() -> Pin<Box<dyn Future<Output = ()> + Send>> {
+    use super::runtime::signals::*;
+    Box::pin(async {
+        tokio::select! {
+            _ = ctrl_c() => {},
+            _ = term() => {},
+        }
+    })
 }

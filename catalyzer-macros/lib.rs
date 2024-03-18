@@ -10,12 +10,44 @@ mod main_func;
 mod routes;
 mod app;
 
+/// Marks a function as the main entry point for the application.
+/// 
+/// # Example
+/// 
+/// ```rust
+/// # use catalyzer::*;
+/// #[main]
+/// fn main() {
+///     // Your code here (can be both sync and async)
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn main(cfg: TokenStream, input: TokenStream) -> TokenStream {
     main_func::main(cfg.into(), input.into()).into()
 }
 
+/// A shortcut for creating an [`App`] instance.
+/// 
+/// [`App`]: struct.App.html
+/// 
+/// # Example
+/// 
+/// ```rust
+/// # use catalyzer::*;
+/// #[main]
+/// fn main() {
+/// App![index]
+///     .bind("0.0.0.0:3000")?
+///     .launch()
+/// }
+/// 
+/// #[get("/")]
+/// fn index() {
+///     "Hello, world!"
+/// }
+/// ```
 #[proc_macro]
+#[allow(non_snake_case)]
 pub fn App(input: TokenStream) -> TokenStream {
     app::app(input.into()).into()
 }

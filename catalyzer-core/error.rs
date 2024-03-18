@@ -1,18 +1,23 @@
 use core::fmt;
 
 pub(crate) mod inner {
-    use super::*;
     pub(crate) use std::io::ErrorKind as IoErrorKind;
-    pub(crate) use std::io::Error as IoError;
     pub(crate) use std::string::FromUtf8Error;
+    pub(crate) use std::io::Error as IoError;
+    use super::*;
 
     /// An Inner error type for Catalyzer operations.
     #[derive(Debug)]
     pub enum CatalyzerError {
+        /// An I/O error occurred.
         Io(IoError),
+        /// An error occurred while converting a byte array to a UTF-8 string.
         Utf8(FromUtf8Error),
+        /// An error occurred while initializing the runtime.
         RuntimeInitializationError,
+        /// The provided method is not supported.
         UnsupportedMethodError,
+        /// No address was provided.
         NoAddress,
     }
 
@@ -57,8 +62,17 @@ pub struct CatalyzerError(Inner);
 
 #[allow(non_upper_case_globals)]
 impl CatalyzerError {
+    /// A shortcut for creating a [`RuntimeInitializationError`].
+    /// 
+    /// [`RuntimeInitializationError`]: crate::__internals__::InnerCatalyzerError::RuntimeInitializationError
     pub const RuntimeInitializationError: Self = Self(Inner::RuntimeInitializationError);
+    /// A shortcut for creating a [`UnsupportedMethodError`].
+    /// 
+    /// [`UnsupportedMethodError`]: crate::__internals__::InnerCatalyzerError::UnsupportedMethodError
     pub const UnsupportedMethodError: Self = Self(Inner::UnsupportedMethodError);
+    /// A shortcut for creating a [`NoAddress`] error.
+    /// 
+    /// [`NoAddress`]: crate::__internals__::InnerCatalyzerError::NoAddress
     pub const NoAddress: Self = Self(Inner::NoAddress);
     /// Creates a new `CatalyzerError` from the given inner error.
     #[inline]

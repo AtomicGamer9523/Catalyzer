@@ -39,10 +39,6 @@ version.workspace = true
 authors.workspace = true
 license-file.workspace = true
 
-[[bin]]
-name = "doc-patcher"
-path = ".github/patches/patcher.rs"
-
 [lib]
 path = "catalyzer.rs"
 

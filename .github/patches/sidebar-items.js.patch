@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"attr":["delete","get","head","main","options","patch","post","put","trace"],"macro":["App"],"mod":["req","res"],"struct":["App","CatalyzerError"],"type":["Result"]};
