@@ -5,6 +5,24 @@
 #![doc(html_no_source)]
 
 //! Catalyzer is a web framework for Rust, made to be simple and easy to use.
+//! 
+//! # Example
+//! 
+//! ```rust
+//! use catalyzer::*;
+//! 
+//! #[main]
+//! fn main() {
+//!     App![index]
+//!         .bind("0.0.0.0:3000")?
+//!         .launch()
+//! }
+//! 
+//! #[get("/")]
+//! fn index() {
+//!     "Hello, world!"
+//! }
+//! ```
 
 pub use ::base::*;
 pub use ::macros::*;
