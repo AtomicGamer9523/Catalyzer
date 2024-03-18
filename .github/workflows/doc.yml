@@ -27,7 +27,7 @@ jobs:
         run: cargo +nightly doc --no-deps -p catalyzer
 
       - name: Run Patches
-        run: cargo run --release --bin patches
+        run: cargo run --bin doc-patcher
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.8
