@@ -26,8 +26,11 @@ jobs:
       - name: Generate docs
         run: cargo +nightly doc --no-deps -p catalyzer
 
-      - name: Run Patches
-        run: cargo run --bin doc-patcher
+      - name: Builder Patcher
+        run: rustc ./.github/patches/patcher.rs -o patcher
+      
+      - name: Run Patcher
+        run: ./patcher
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.8
