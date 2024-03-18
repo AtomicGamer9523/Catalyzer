@@ -41,7 +41,7 @@ impl From<Html> for Body {
     }
 }
 
-impl crate::res::IntoRawResponse for Html {
+impl ::axum::response::IntoResponse for Html {
     fn into_response(self) -> RawResponse {
         RawResponse::builder()
             .header("Content-Type", "text/html")

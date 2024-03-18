@@ -1,3 +1,5 @@
+//! Runtime management for the Catalyzer framework.
+
 pub(crate) use tokio::runtime::Runtime as TokioRuntime;
 use tokio::runtime::Builder as TokioRuntimeBuilder;
 use utils::ResultTransformer;
@@ -140,7 +142,7 @@ mod signals {
 }
 
 #[doc(hidden)]
-pub(crate) fn signal_handler() -> app::launch::signal_handler {
+pub(crate) fn signal_handler() -> core::pin::Pin<Box<dyn Future<Output = ()> + Send>> {
     Box::pin(async {
         tokio::select! {
             _ = signals::ctrl_c() => {
