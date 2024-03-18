@@ -176,7 +176,7 @@ pub(crate) mod signals {
     #[cfg(unix)]
     pub(crate) async fn term() {
         match signal::unix::signal(signal::unix::SignalKind::terminate()) {
-            Ok(mut stream) => stream.recv().await,
+            Ok(mut stream) => { stream.recv().await; },
             Err(e) => {
                 log::error!("Failed to install signal handler: {}", e);
                 std::process::exit(1);
