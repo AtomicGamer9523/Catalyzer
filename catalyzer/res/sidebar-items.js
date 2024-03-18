@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Binary","Css","Html","Js","Json","Text","Xml"],"trait":["IntoRawResponse"],"type":["RawResponse"]};

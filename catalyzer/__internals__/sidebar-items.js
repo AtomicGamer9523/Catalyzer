@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InnerCatalyzerError"],"mod":["content_loader","crates","runtime"],"struct":["AxumRouter","CatalyzedApp","CatalyzerRuntime","CatalyzerRuntimeBuilder","Method"],"trait":["AxumHandler","HandlerMetadata"]};
