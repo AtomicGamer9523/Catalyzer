@@ -1,7 +1,7 @@
 //! A collection of response types and utilities.
 
 use ::axum::response::{IntoResponse as Ir, Response as R};
-use crate::__internals__::content_loader::*;
+use crate::internals::content_loader::*;
 use axum::body::Body;
 use std::path::Path;
 use core::fmt;

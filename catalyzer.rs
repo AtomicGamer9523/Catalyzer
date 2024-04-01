@@ -26,3 +26,22 @@
 
 pub use ::base::*;
 pub use ::macros::*;
+
+/// Allows for simplistic creation of web applications.
+#[macro_export(local_inner_macros)]
+macro_rules! catalyze {
+    [$($routes:ident)+] => (
+        #[cfg(not(debug_assertions))]
+        ::core::compile_error!(r#"You can only use the `catalyze!` macro in debug mode!
+
+Hey there, it seems like you want to use the `catalyze!` macro in release mode.
+Unfortunately, this is not possible, as it is intended to be used for development purposes only.
+
+"#);
+        #[$crate::main]
+        #[cfg(debug_assertions)]
+        fn main() { App![$($routes)+].__auto_configure()?.launch() }
+        #[cfg(not(debug_assertions))]
+        fn main() { loop { } }
+    )
+}

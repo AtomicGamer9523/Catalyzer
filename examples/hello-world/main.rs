@@ -6,16 +6,9 @@
 
 use catalyzer::*;
 
-#[main]
-fn main() {
-    App![index]
-        .bind("0.0.0.0:3000")?
-        .launch()
-}
-
-use res::Html;
+catalyze![index];
 
 #[get("/")]
 fn index() {
-    Html::from_file("index.html").await
+    res::Html::from_file("index.html").await
 }

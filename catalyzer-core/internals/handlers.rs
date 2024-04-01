@@ -29,9 +29,9 @@ pub use ::axum::http::Method;
 /// #[repr(transparent)]
 /// #[allow(non_camel_case_types)]
 /// struct index_metadata;
-/// impl ::catalyzer::__internals__::HandlerMetadata for index_metadata {
+/// impl ::catalyzer::internals::HandlerMetadata for index_metadata {
 ///     const PATH: &'static str = "/";
-///     const METHOD: ::catalyzer::__internals__::Method = ::catalyzer::__internals__::Method::GET;
+///     const METHOD: ::catalyzer::internals::Method = ::catalyzer::internals::Method::GET;
 /// }
 /// ```
 pub trait HandlerMetadata {

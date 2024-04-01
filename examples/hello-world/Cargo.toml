@@ -12,7 +12,3 @@ path = "main.rs"
 
 [dependencies.catalyzer]
 path = "../.."
-
-[dependencies]
-simple_logger = "*"
-log = "*"

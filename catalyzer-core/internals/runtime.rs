@@ -1,9 +1,7 @@
-//! Runtime management for the Catalyzer framework.
-
 pub(crate) use tokio::runtime::Runtime as TokioRuntime;
 use tokio::runtime::Builder as TokioRuntimeBuilder;
-use utils::ResultTransformer;
 use core::future::Future;
+use utils::*;
 use crate::*;
 
 /// A runtime for the Catalyzer framework.
@@ -15,42 +13,37 @@ pub struct CatalyzerRuntime {
     tokio: TokioRuntime
 }
 
-/// A builder for the [`CatalyzerRuntime`].
-/// 
-/// [`CatalyzerRuntime`]: crate::__internals__::runtime::CatalyzerRuntime
+/// A builder for the [`CatalyzerRuntime`](crate::internals::runtime::CatalyzerRuntime).
 #[derive(Debug)]
 pub struct CatalyzerRuntimeBuilder {
     tokio: Option<TokioRuntime>,
 }
 
-fn default_init() -> Result<CatalyzerRuntime> {
-    CatalyzerRuntime::builder()
-        .setup_tokio(|b| b.enable_all())?
-        .build()
-}
-
 impl CatalyzerRuntime {
-    /// Default pre-initialization function.
-    /// 
-    /// Only really useful when the `builtin-logger` feature is enabled.
-    #[doc(hidden)]
-    pub fn default_preinit() {
+    fn default_preinit() -> Result<CatalyzerRuntime> {
         #[cfg(feature = "builtin-logger")]
         {
-            let mut l = ::builtin_logger::SimpleLogger::new();
-            #[cfg(debug_assertions)]
-            { l = l.with_level(log::LevelFilter::Trace); }
-            #[cfg(not(debug_assertions))]
-            { l = l.with_level(log::LevelFilter::Warn); }
+            let log_level = std::env::var("CATALYZER_LOG_LEVEL").unwrap_or("info".to_string());
+            let log_level = log_level.parse().unwrap_or(log::LevelFilter::Info);
+            let mut l = ::builtin_logger::SimpleLogger::new()
+                .with_level(log_level);
             #[cfg(debug_assertions)]
             { l = l.with_colors(true); }
             #[cfg(not(debug_assertions))]
             { l = l.with_colors(false); }
-            if let Err(e) = l.init() {
-                eprintln!("Failed to initialize logger: {e}");
-                std::process::exit(1);
-            }
+            let _ = l.init();
         }
+        use std::sync::atomic::{AtomicU8, Ordering};
+        static ATOMIC_ID: AtomicU8 = AtomicU8::new(0);
+        CatalyzerRuntime::builder()
+            .setup_tokio(|b|
+                b.enable_all()
+                .thread_name_fn(|| {
+                    let id = ATOMIC_ID.fetch_add(1, Ordering::SeqCst);
+                    format!("Catalyzer Runtime Worker #{id}")
+                })
+            )?
+            .build()
     }
     /// Creates a new builder for the runtime.
     #[inline]
@@ -60,8 +53,8 @@ impl CatalyzerRuntime {
         }
     }
     /// Initializes the runtime with an optional custom initialization function.
-    pub fn run_init(func: Option<fn() -> Result<Self>>) -> Self {
-        match func.map_or_else(default_init, |f| f()) {
+    pub fn init(func: Option<fn() -> Result<Self>>) -> Self {
+        match func.map_or_else(Self::default_preinit, |f| f()) {
             Err(e) => {
                 log::error!("Failed to initialize runtime: {}", e);
                 std::process::exit(1);
@@ -76,14 +69,14 @@ impl CatalyzerRuntime {
     /// # Example
     /// 
     /// ```rust
-    /// # use catalyzer::__internals__::runtime::CatalyzerRuntime;
+    /// # use catalyzer::internals::runtime::CatalyzerRuntime;
     /// # use catalyzer::Result;
     /// fn main() {
     ///     async fn main() -> Result {
     ///         // Your code here
     ///         Ok(())
     ///     }
-    ///     CatalyzerRuntime::run_init(None).run(main);
+    ///     CatalyzerRuntime::init(None).run(main);
     /// }
     /// ```
     pub fn run<F, Fut>(self, f: F) where
@@ -137,7 +130,7 @@ impl CatalyzerRuntimeBuilder {
     /// # Example
     /// 
     /// ```rust
-    /// # use catalyzer::__internals__::runtime::CatalyzerRuntimeBuilder;
+    /// # use catalyzer::internals::runtime::CatalyzerRuntimeBuilder;
     /// # use catalyzer::Result;
     /// # fn main() -> Result {
     /// CatalyzerRuntime::builder()
@@ -154,11 +147,9 @@ impl CatalyzerRuntimeBuilder {
             .map(|t| { self.tokio = Some(t); self})
             .map_auto()
     }
-    /// Builds the [`CatalyzerRuntime`].
+    /// Builds the [`CatalyzerRuntime`](crate::internals::runtime::CatalyzerRuntime).
     /// 
     /// This function consumes the builder, and returns a runtime.
-    /// 
-    /// [`CatalyzerRuntime`]: crate::__internals__::runtime::CatalyzerRuntime
     pub fn build(self) -> Result<CatalyzerRuntime> {
         let tokio = self.tokio.ok_or(CatalyzerError::RuntimeInitializationError)?;
         Ok(CatalyzerRuntime { tokio, })

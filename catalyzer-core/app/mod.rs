@@ -1,6 +1,6 @@
 use std::net::{SocketAddr, ToSocketAddrs};
 use axum::Router as AxumRouter;
-use crate::__internals__::*;
+use crate::internals::*;
 use crate::error::*;
 
 pub(crate) mod launch;
@@ -125,5 +125,15 @@ impl<State> App<State> where
             address: self.address,
             https_address: self.https_address,
         }
+    }
+    /// Automatically configures the application.
+    /// 
+    /// This is only available in debug builds.
+    /// 
+    /// This is called by the `catalyze!` macro.
+    #[doc(hidden)]
+    #[cfg(debug_assertions)]
+    pub fn __auto_configure(self) -> Result<Self> {
+        self.bind("0.0.0.0:3000")
     }
 }

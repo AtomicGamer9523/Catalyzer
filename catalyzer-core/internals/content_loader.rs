@@ -1,21 +1,17 @@
 //! Content loaders for strings and bytes.
 
-use utils::ResultTransformer;
 use axum::body::Body;
 use std::path::Path;
 use crate::Result;
 use core::fmt;
+use utils::*;
 
 macro_rules! loader {
     ($(
         $(#[$attr:meta])*
         $name:ident -> $inner:ident(
-            $(#[$alloc_attr:meta])*
-            ;$(#[$alloc_fn_attr:meta])*
-            $alloc:ty;
-            $(#[$static_attr:meta])*
-            ;$(#[$static_fn_attr:meta])*
-            $static:ty;
+            $(#[$alloc_attr:meta])*;$(#[$alloc_fn_attr:meta])*$alloc:ty;
+            $(#[$static_attr:meta])*;$(#[$static_fn_attr:meta])*$static:ty;
         )
     )+) => ($(
         $(#[$attr])*
@@ -81,9 +77,8 @@ macro_rules! loader {
 }
 
 loader!(
-    /// A content loader for strings.
-    StringContentLoader -> string_inner(
-        /// An allocated String.
+    /// A content loader for valid UTF-8 strings.
+    StringContentLoader -> string_inner(/// An allocated String.
         ;/// Creates a new `StringContentLoader` from an allocated `String`.
         String;
         /// A static string.
@@ -91,8 +86,7 @@ loader!(
         &'static str;
     )
     /// A content loader for bytes.
-    BytesContentLoader -> bytes_inner(
-        /// An allocated Vec<u8>.
+    BytesContentLoader -> bytes_inner(/// An allocated Vec<u8>.
         ;/// Creates a new `BytesContentLoader` from an allocated `Vec<u8>`.
         Vec<u8>;
         /// A static byte slice.

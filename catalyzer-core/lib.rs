@@ -14,8 +14,7 @@ pub mod req;
 #[path = "response/mod.rs"]
 pub mod res;
 
-#[path = "internals/mod.rs"]
-pub mod __internals__;
+pub mod internals;
 #[doc(inline)]
 pub use error::{Result, CatalyzerError};
 #[doc(inline)]
