@@ -44,9 +44,7 @@ impl<S, State> App<State> where
     /// This should be the last method called on the [`App`](crate::App) instance.
     pub async fn launch(self) -> Result<CatalyzedApp<S, State>> {
         let addr = self.address.ok_or(CatalyzerError::NoAddress)?;
-        let tcp = tokio::net::TcpListener::bind(addr)
-            .await
-            .map_err(CatalyzerError::from)?;
+        let tcp = tokio::net::TcpListener::bind(addr).await?;
         let app = axum::serve(tcp, self.router);
         Ok(CatalyzedApp(app.with_graceful_shutdown(signal_handler())))
     }

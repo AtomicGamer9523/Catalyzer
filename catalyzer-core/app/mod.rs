@@ -71,7 +71,7 @@ impl<State> App<State> where
             Method::HEAD => axum::routing::head(handler),
             Method::OPTIONS => axum::routing::options(handler),
             Method::TRACE => axum::routing::trace(handler),
-            _ => return Err(CatalyzerError::UnsupportedMethodError)
+            _ => return Err(crate::CatalyzerError::UnsupportedMethodError)
         };
         log::trace!("Mounted a {} on \"{}\"", Meta::METHOD, Meta::PATH);
         self.router = self.router.route(Meta::PATH, method_router);

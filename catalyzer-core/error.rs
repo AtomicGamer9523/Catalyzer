@@ -150,6 +150,13 @@ impl From<FromUtf8Error> for CatalyzerError {
     }
 }
 
+impl From<Inner> for CatalyzerError {
+    #[inline]
+    fn from(e: Inner) -> Self {
+        Self(e)
+    }
+}
+
 use core::result::Result as R;
 /// A specialized `Result` type for Catalyzer operations.
 pub type Result<T = (), E = CatalyzerError> = R<T, E>;
