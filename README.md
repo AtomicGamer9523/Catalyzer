@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./.github/doc/logo.png" alt="catalyzer-logo" style="width:10%"/>
+    <img src="https://raw.githubusercontent.com/AtomicGamer9523/Catalyzer/main/.github/doc/logo.png" alt="catalyzer-logo" style="width:10%"/>
 </p>
 <h1 align="center"><b>Catalyzer</b></h1>
 <p align="center">Catalyzer is a web framework for Rust, made to be simple and easy to use.</p>

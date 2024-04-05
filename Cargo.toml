@@ -46,10 +46,12 @@ path = "catalyzer.rs"
 package = "catalyzer-core"
 path = "catalyzer-core"
 default-features = false
+version = "0.1.0"
 
 [dependencies.macros]
 package = "catalyzer-macros"
 path = "catalyzer-macros"
+version = "0.1.0"
 
 [features]
 default = ["builtin-logger"]
