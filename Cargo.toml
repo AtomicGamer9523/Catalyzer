@@ -11,7 +11,7 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.1.2"
+version = "0.1.3"
 authors = [
     "Матвей Т <https://matveit.dev> AtomicGamer9523@github"
 ]
@@ -61,12 +61,12 @@ path = "catalyzer.rs"
 package = "catalyzer-core"
 path = "catalyzer-core"
 default-features = false
-version = "0.1.0"
+version = "0.1.3"
 
 [dependencies.macros]
 package = "catalyzer-macros"
 path = "catalyzer-macros"
-version = "0.1.0"
+version = "0.1.3"
 
 [features]
 default = ["builtin-logger"]

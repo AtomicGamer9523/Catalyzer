@@ -1,5 +1,9 @@
 pub use ::axum::handler::Handler as AxumHandler;
+pub use ::tower::Service as TowerService;
 pub use ::axum::http::Method;
+
+use core::convert::Infallible;
+use crate::req::RawRequest;
 
 /// A trait that represents a handler metadata.
 /// 
@@ -39,4 +43,14 @@ pub trait HandlerMetadata {
     const PATH: &'static str;
     /// Method to handle.
     const METHOD: Method;
+}
+
+/// A trait that represents a Catalyzer service.
+/// 
+/// All services must implement this trait (and the [`TowerService`] trait).
+/// 
+/// [`TowerService`]: https://docs.rs/tower/0.4.4/tower/trait.Service.html
+pub trait CatalyzerService: TowerService<RawRequest, Error = Infallible> {
+    /// Path to mount the service on.
+    const PATH: &'static str;
 }

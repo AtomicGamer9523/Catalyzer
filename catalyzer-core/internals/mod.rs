@@ -6,8 +6,8 @@ pub mod runtime {
 }
 mod handlers;
 
+pub use crate::internals::handlers::{HandlerMetadata, AxumHandler, Method, CatalyzerService, TowerService};
 pub use crate::internals::runtime::{CatalyzerRuntimeBuilder, CatalyzerRuntime};
-pub use crate::internals::handlers::{HandlerMetadata, AxumHandler, Method};
 pub use crate::error::inner::CatalyzerIoError as InnerCatalyzerIoError;
 pub use crate::error::inner::CatalyzerError as InnerCatalyzerError;
 pub use crate::app::launch::CatalyzedApp;

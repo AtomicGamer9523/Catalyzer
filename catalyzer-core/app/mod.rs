@@ -1,7 +1,10 @@
-use std::net::{SocketAddr, ToSocketAddrs};
-use axum::Router as AxumRouter;
+use crate::internals::CatalyzerService;
+use crate::res::IntoRawResponse;
 use crate::internals::*;
 use crate::error::*;
+
+use std::net::{SocketAddr, ToSocketAddrs};
+use axum::Router as AxumRouter;
 
 pub(crate) mod launch;
 
@@ -122,6 +125,28 @@ impl<State> App<State> where
     pub fn set_state<S2>(self, state: State) -> App<S2> {
         App {
             router: self.router.with_state::<S2>(state),
+            address: self.address,
+            https_address: self.https_address,
+        }
+    }
+    /// Mounts a service on the application.
+    /// 
+    /// This requires a service that implements the [`CatalyzerService`] trait.
+    pub fn service<S>(mut self, service: S) -> Self where
+        S: CatalyzerService + Clone + Send + 'static,
+        S::Response: IntoRawResponse,
+        S::Future: Send + 'static,
+    {
+        self.router = self.router.route_service(S::PATH, service);
+        self
+    }
+    /// Reveals the inner router of the application.
+    /// 
+    /// This is used for advanced use-cases where you need to access the inner
+    /// router of the application (e.g. for mounting a sub-application or service).
+    pub fn inner<S2>(self, mapper: fn(AxumRouter<State>) -> AxumRouter<S2>) -> App<S2> {
+        App {
+            router: mapper(self.router),
             address: self.address,
             https_address: self.https_address,
         }
