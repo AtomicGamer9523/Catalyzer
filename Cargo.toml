@@ -11,11 +11,21 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.1.0"
+version = "0.1.2"
 authors = [
     "Матвей Т <https://matveit.dev> AtomicGamer9523@github"
 ]
+keywords = [
+    "rest", "async", "non-blocking", "server", "framework"
+]
+homepage = "https://matveit.dev/projects/catalyzer"
+repository = "https://github.com/AtomicGamer9523/Catalyzer"
+categories = ["asynchronous", "network-programming"]
 license-file = "LICENSE"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [workspace.lints.rust]
 unused = "warn"
@@ -37,7 +47,12 @@ description = "HTTP server framework"
 edition.workspace = true
 version.workspace = true
 authors.workspace = true
+keywords.workspace = true
+homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
 license-file.workspace = true
+exclude = ["examples", ".github", ".gitignore"]
 
 [lib]
 path = "catalyzer.rs"

@@ -4,6 +4,10 @@ description = "Core of Catalyzer"
 edition.workspace = true
 version.workspace = true
 authors.workspace = true
+keywords.workspace = true
+homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
 license-file.workspace = true
 
 [lib]
@@ -13,7 +17,7 @@ path = "lib.rs"
 [dependencies.utils]
 package = "catalyzer-utils"
 path = "../catalyzer-utils"
-version = "0.1.0"
+version = "0.1.2"
 
 [dependencies.axumextras]
 package = "axum-extra"
